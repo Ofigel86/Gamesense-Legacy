@@ -199,8 +199,12 @@ namespace Interfaces
 		// (unique scan, operand @ +1). NOTE: must NOT read Displacement.Data.m_uInput here -
 		// CreateDisplacement() runs later in Create() and would still be zero at this point.
 		{
+			// scan first; if the scan ever flakes, fall back to this build's fixed RVA
 			auto InputScan = Memory::Scan( XorStr( "client.dll" ), XorStr( "B9 ? ? ? ? FF 75 08 E8 ? ? ? ? 8B 06" ) );
-			m_pInput = InputScan ? reinterpret_cast< IInput* >( *( std::uintptr_t* )( InputScan + 1 ) ) : nullptr;
+			auto input_addr = InputScan ? *( std::uintptr_t* )( InputScan + 1 )
+				: ( ( std::uintptr_t )GetModuleHandleA( XorStr( "client.dll" ) ) + 0x4F14CA0 );
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: input = %p (%s)" ), ( void* )input_addr, InputScan ? "scan" : "rva-fallback" );
+			m_pInput = reinterpret_cast< IInput* >( input_addr );
 		}
 		if( !m_pInput.IsValid( ) ) {
 			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
@@ -212,7 +216,10 @@ namespace Interfaces
 		// global slot - unique signature '8B 45 0C 8D 4D 08 A3 ? ? ? ?' (slot operand @ +7).
 		{
 			auto GlobalsScan = Memory::Scan( XorStr( "client.dll" ), XorStr( "8B 45 0C 8D 4D 08 A3 ? ? ? ?" ) );
-			m_pGlobalVars = GlobalsScan ? **reinterpret_cast< CGlobalVars*** >( GlobalsScan + 7 ) : nullptr;
+			auto globals_slot = GlobalsScan ? ( GlobalsScan + 7 )
+				: ( ( std::uintptr_t )GetModuleHandleA( XorStr( "client.dll" ) ) + 0xA9B3A0 );
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: globals slot = %p (%s)" ), ( void* )globals_slot, GlobalsScan ? "scan" : "rva-fallback" );
+			m_pGlobalVars = *reinterpret_cast< CGlobalVars** >( globals_slot );
 		}
 		if( !m_pGlobalVars.IsValid( ) ) {
 			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
@@ -256,7 +263,10 @@ namespace Interfaces
 		// in client.dll references the same slot 0x14FD33D4 on this build).
 		{
 			auto ClientModeScan = Memory::Scan( XorStr( "client.dll" ), XorStr( "56 8B 35 ? ? ? ? 8B CE 8B 06 FF 90 80 00 00 00" ) );
-			m_pClientMode = ClientModeScan ? **( IClientMode*** )( ClientModeScan + 3 ) : nullptr;
+			auto clientmode_slot = ClientModeScan ? ( ClientModeScan + 3 )
+				: ( ( std::uintptr_t )GetModuleHandleA( XorStr( "client.dll" ) ) + 0x4FD33D4 );
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: clientmode slot = %p (%s)" ), ( void* )clientmode_slot, ClientModeScan ? "scan" : "rva-fallback" );
+			m_pClientMode = *( IClientMode** )( clientmode_slot ); // single deref: slot already resolved
 		}
 		if( !m_pClientMode.IsValid( ) ) {
 			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
@@ -340,7 +350,10 @@ namespace Interfaces
 		// (engine RVA 0x5C7574 on this build), operand @ +1.
 		{
 			auto ClientStateScan = Memory::Scan( XorStr( "engine.dll" ), XorStr( "A1 ? ? ? ? 8B 80 ? ? ? ? C3" ) );
-			m_pClientState = ClientStateScan ? Encrypted_t<CClientState>( **( CClientState*** )( ClientStateScan + 1 ) ) : Encrypted_t<CClientState>( nullptr );
+			auto clientstate_slot = ClientStateScan ? ( ClientStateScan + 1 )
+				: ( ( std::uintptr_t )GetModuleHandleA( XorStr( "engine.dll" ) ) + 0x5C7574 );
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: clientstate slot = %p (%s)" ), ( void* )clientstate_slot, ClientStateScan ? "scan" : "rva-fallback" );
+			m_pClientState = Encrypted_t<CClientState>( *( CClientState** )( clientstate_slot ) ); // single deref
 		}
 		if( !m_pClientState.IsValid( ) ) {
 			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
