@@ -36,6 +36,10 @@ int Math::ClipRayToHitbox( const Ray_t& ray, mstudiobbox_t* pbox, matrix3x4_t& m
 {
 	//crash crash crash crash
 	static auto clp_fn = Memory::Scan( XorStr( "client.dll" ), XorStr( "55 8B EC 83 E4 F8 F3 0F 10 42" ) );
+	if( !clp_fn ) { // 2016-12-13: unresolved on this build - report no intersection
+		tr.fraction = 1.f;
+		return 0;
+	}
 	return reinterpret_cast< int( __fastcall* )( const Ray_t&, mstudiobbox_t*, matrix3x4_t&, CGameTrace& ) >( clp_fn )( ray, pbox, matrix, tr );
 }
 #pragma optimize("", on)

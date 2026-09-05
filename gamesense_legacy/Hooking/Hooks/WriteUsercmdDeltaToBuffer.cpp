@@ -17,8 +17,8 @@ void WriteUsercmd( bf_write* buf, CUserCmd* incmd, CUserCmd* outcmd ) {
 }
 
 bool __fastcall Hooked::WriteUsercmdDeltaToBuffer( void* ecx, void* edx, int nSlot, void* pBuf, int nFrom, int nTo, bool newCmd ) {
-	static auto sendmovecall = (void*)Memory::Scan( XorStr( "engine.dll" ), XorStr( "84 C0 74 04 B0 01 EB 02 32 C0 8B FE 46 3B F3 7E C9 84 C0 0F 84" ) );
-	if( _ReturnAddress( ) != sendmovecall || g_TickbaseController.m_iShiftAmount <= 0 ) {
+		static auto sendmovecall = (void*)Memory::Scan( XorStr( "engine.dll" ), XorStr( "84 C0 74 04 B0 01 EB 02 32 C0 8B FE 46 3B 75 FC 7E C8 84 C0" ) ); // 2016-12-13: cmp esi,[ebp-4] instead of ebx
+		if( _ReturnAddress( ) != sendmovecall || g_TickbaseController.m_iShiftAmount <= 0 ) {
 		return oWriteUsercmdDeltaToBuffer( ecx, nSlot, pBuf, nFrom, nTo, newCmd );
 	}
 

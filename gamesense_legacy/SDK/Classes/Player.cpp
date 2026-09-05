@@ -155,7 +155,8 @@ bool C_BasePlayer::IsDead( ) {
 }
 
 void C_BasePlayer::SetCurrentCommand( CUserCmd* cmd ) {
-	*( CUserCmd** )( ( uintptr_t )this + Engine::Displacement.C_BasePlayer.m_pCurrentCommand ) = cmd;
+	if( Engine::Displacement.C_BasePlayer.m_pCurrentCommand ) // 2016-12-13: unresolved on this build
+		*( CUserCmd** )( ( uintptr_t )this + Engine::Displacement.C_BasePlayer.m_pCurrentCommand ) = cmd;
 }
 
 Vector C_BasePlayer::GetEyePosition( ) {
@@ -351,6 +352,8 @@ bool& C_CSPlayer::m_bHasDefuser( ) {
 
 bool C_CSPlayer::PhysicsRunThink( int unk01 ) {
 	static auto impl_PhysicsRunThink = ( bool( __thiscall* )( void*, int ) )Engine::Displacement.Function.m_uImplPhysicsRunThink;
+	if( !impl_PhysicsRunThink ) // 2016-12-13: unresolved on this build
+		return true;
 	return impl_PhysicsRunThink( this, unk01 );
 }
 
@@ -358,19 +361,27 @@ int C_CSPlayer::SetNextThink( int tick ) {
 	static const auto next_think = Memory::Scan( XorStr( "client.dll" ), XorStr( "55 8B EC 56 57 8B F9 8B B7 E8" ) );
 
 	typedef int( __thiscall* fnSetNextThink ) ( C_CSPlayer*, int tick );
+	if( !next_think ) // 2016-12-13: unresolved on this build
+		return tick;
 	auto ret = ( ( fnSetNextThink )next_think ) ( this, tick );
 	return ret;
 }
 
 void C_CSPlayer::Think( ) {
-	static auto index = *( int* )( Memory::Scan( XorStr( "client.dll" ), XorStr( "FF 90 ? ? ? ? FF 35 ? ? ? ? 8B 4C 24 3C" ) ) + 2 ) / 4; // ref: CPrediction::ProcessMovement  (*(void (__thiscall **)(_DWORD *))(*player + 552))(player);
+	static auto thinkScan = Memory::Scan( XorStr( "client.dll" ), XorStr( "FF 90 ? ? ? ? FF 35 ? ? ? ? 8B 4C 24 3C" ) );
+	if( !thinkScan ) // 2016-12-13: unresolved on this build
+		return;
+	static auto index = *( int* )( thinkScan + 2 ) / 4; // ref: CPrediction::ProcessMovement  (*(void (__thiscall **)(_DWORD *))(*player + 552))(player);
 	//xref CPrediction::ProcessMovement (*(void (__thiscall **)(_DWORD *))(*a2 + 552))(a2);
 	using Fn = void( __thiscall* )( void* );
 	Memory::VCall<Fn>( this, /*138*/ 137 )( this ); // 139
 }
 
 void C_CSPlayer::PreThink( ) {
-	static auto index = *( int* )( Memory::Scan( XorStr( "client.dll" ), XorStr( "FF 90 ? ? ? ? 8B 86 ? ? ? ? 83 F8 FF" ) ) + 2 ) / 4;
+	static auto preThinkScan = Memory::Scan( XorStr( "client.dll" ), XorStr( "FF 90 ? ? ? ? 8B 86 ? ? ? ? 83 F8 FF" ) );
+	if( !preThinkScan ) // 2016-12-13: unresolved on this build
+		return;
+	static auto index = *( int* )( preThinkScan + 2 ) / 4;
 	//xref CPrediction::ProcessMovement 
 	// if ( (unsigned __int8)sub_102FED00(0) )
 	// (*(void (__thiscall **)(_DWORD *))(*a2 + 1268))(a2);
@@ -487,7 +498,10 @@ bool C_CSPlayer::IsReloading( ) {
 
 int C_CSPlayer::LookupBone( const char* szName )
 {
-	static auto lookupBone = Memory::CallableFromRelative( ( DWORD )Memory::Scan( XorStr( "client.dll" ), XorStr( "E8 ? ? ? ? 89 44 24 5C" ) ) );
+	static auto lookupBoneScan = Memory::Scan( XorStr( "client.dll" ), XorStr( "E8 ? ? ? ? 89 44 24 5C" ) );
+	static auto lookupBone = lookupBoneScan ? Memory::CallableFromRelative( ( DWORD )lookupBoneScan ) : 0;
+	if( !lookupBone ) // 2016-12-13: unresolved on this build
+		return -1;
 	return reinterpret_cast< int( __thiscall* )( void*, const char* ) >( lookupBone )( this, szName );
 }
 
@@ -685,7 +699,9 @@ bool C_CSPlayer::SetupBones( matrix3x4_t* pBoneToWorld, int nMaxBones, int boneM
 	if( !renderable )
 		return nullptr;
 
-	const auto m_pIk = m_pIK( );
+	// 2016-12-13: IK member offset unresolved on this build (m_nForceBone-0x1C points at the
+	// bone-count field here) - keep a plain 0 so both writes below get skipped by the guards
+	const int m_pIk = 0;
 	const auto client_ent_flags = m_ClientEntEffects( );
 	const auto effects = m_fEffects( );
 	const auto animlod = m_nAnimLODflags( );
@@ -709,7 +725,8 @@ bool C_CSPlayer::SetupBones( matrix3x4_t* pBoneToWorld, int nMaxBones, int boneM
 	m_pGlobalVars->tickcount = ticks;
 	m_pGlobalVars->interpolation_amount = 0.f;
 
-	m_pIK( ) = 0;
+	if( Engine::Displacement.C_BaseAnimating.m_pIk ) // 2016-12-13
+		m_pIK( ) = 0;
 	m_BoneAccessor( ).m_ReadableBones = 0;
 	m_iMostRecentModelBoneCounter( ) = 0;
 	m_flLastBoneSetupTime( ) = ( float )0xFF7FFFFF; // FLT_MAX * -1.f
@@ -740,7 +757,8 @@ bool C_CSPlayer::SetupBones( matrix3x4_t* pBoneToWorld, int nMaxBones, int boneM
 
 	m_pGlobalVars->framecount = framecount;
 
-	m_pIK( ) = m_pIk;
+	if( Engine::Displacement.C_BaseAnimating.m_pIk && m_pIk ) // 2016-12-13
+		m_pIK( ) = m_pIk;
 	m_fEffects( ) = effects;
 	m_ClientEntEffects( ) = client_ent_flags;
 	m_nAnimLODflags( ) = animlod;

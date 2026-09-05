@@ -18,6 +18,12 @@ static constexpr auto HzoomPanel = hash_32_fnv1a_const("HudZoom");
 void __fastcall Hooked::PaintTraverse( void* ecx, void* edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce ) {
 	Render::Engine::Initialise( );
 
+	static bool s_diagLogged = false; // 2016-12-13 port: render-path diagnostics
+	if( !s_diagLogged ) {
+		s_diagLogged = true;
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: PaintTraverse hook alive" ) );
+	}
+
 	g_Vars.globals.szLastHookCalled = XorStr( "21" );
 
 	static unsigned int zoom{};

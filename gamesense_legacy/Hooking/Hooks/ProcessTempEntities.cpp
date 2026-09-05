@@ -10,7 +10,8 @@ bool __fastcall Hooked::ProcessTempEntities( void* ecx, void* edx, void* msg )
 	bool ret = oProcessTempEntities( ecx, msg );
 	m_pClientState->m_nMaxClients( ) = backup;
 
-	Hooked::CL_FireEvents( );
+	if( Hooked::CL_FireEvents ) // 2016-12-13: guard unresolved engine signature
+		Hooked::CL_FireEvents( );
 
 	return ret;
 }

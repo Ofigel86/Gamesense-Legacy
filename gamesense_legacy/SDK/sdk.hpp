@@ -3072,6 +3072,8 @@ static T FindHudElement( const char* name ) {
 		return ( T )0;
 
 	static auto find_hud_element = reinterpret_cast< uintptr_t( __thiscall* )( void*, const char* ) >( Engine::Displacement.Function.m_uFindHudElement );
+	if( !find_hud_element ) // 2016-12-13: unresolved on this build
+		return ( T )0;
 	return ( T )find_hud_element( pThis, name );
 }
 
@@ -3147,6 +3149,8 @@ class ActivityModifiersWrapper {
 	void AddActivityModifier( const char* szName ) {
 		typedef void( __thiscall* fnAddActivityModifier )( void*, const char* );
 		static const auto adr = Memory::Scan( XorStr( "server.dll" ), XorStr( "55 8B EC 8B 55 08 83 EC 30" ) );
+		if( !adr ) // 2016-12-13: unresolved on this build, unused
+			return;
 		( ( fnAddActivityModifier )adr )( this, szName );
 	}
 
@@ -3261,15 +3265,20 @@ public:
 	CUtlVector< NoticeText_t > m_vecDeathNotices;
 };
 
-class CHud {
-public:
-	template< class T >
-	T FindHudElement( const char* name ) {
-		static auto FindHudElement_t = reinterpret_cast< uintptr_t( __thiscall* )( void*, const char* ) >( Memory::Scan( XorStr( "client.dll" ), XorStr( "55 8B EC 53 8B 5D 08 56 57 8B F9 33 F6 39 77 28" ) ) );
+	class CHud {
+	public:
+		template< class T >
+		T FindHudElement( const char* name ) {
+			// 2016-12-13 port: pattern unresolved on this build. Calling the null scan
+			// result crashed the game at init (indirect call to address 0) - return
+			// null instead; all consumers must IsValid() check (death-notices does).
+			static auto FindHudElement_t = reinterpret_cast< uintptr_t( __thiscall* )( void*, const char* ) >( Memory::Scan( XorStr( "client.dll" ), XorStr( "55 8B EC 53 8B 5D 08 56 57 8B F9 33 F6 39 77 28" ) ) );
+			if( !FindHudElement_t )
+				return reinterpret_cast< T >( 0 );
 
-		return reinterpret_cast< T >( FindHudElement_t( this, name ) );
-	}
-};
+			return reinterpret_cast< T >( FindHudElement_t( this, name ) );
+		}
+	};
 
 #include "../Renderer/Render.hpp"
 

@@ -426,7 +426,10 @@ void KitParser::initialize_kits( ) {
 			}
 		}
 
-		const auto icons_head = reinterpret_cast< Head_t< int, AlternateIconData_t >* >( std::uintptr_t( item_schema ) + *( int* )( Memory::Scan( XorStr( "client.dll" ), XorStr( "8D 9A ?? ?? ?? ?? 89 45 9C" ) ) + 2 ) + 4 );
+		static const auto icons_head_scan = Memory::Scan( XorStr( "client.dll" ), XorStr( "8D 9A ?? ?? ?? ?? 89 45 9C" ) );
+		const auto icons_head = icons_head_scan
+			? reinterpret_cast< Head_t< int, AlternateIconData_t >* >( std::uintptr_t( item_schema ) + *( int* )( icons_head_scan + 2 ) + 4 )
+			: nullptr; // 2016-12-13: econ schema layout differs on this build, guarded
 
 		const auto map_head = reinterpret_cast< Head_t< int, CPaintKit* >* >( std::uintptr_t( item_schema ) + head_offset );
 
@@ -559,7 +562,7 @@ void KitParser::initialize_kits( ) {
 			}
 
 			if( items[ size_t( info.first ) ].glove || items[ size_t( info.first ) ].knife ) {
-				for( int i = 0; i < icons_head->last_element; ++i ) {
+				for( int i = 0; icons_head && i < icons_head->last_element; ++i ) { // 2016-12-13: null-guarded
 					const auto& icon = icons_head->memory[ i ].value;
 
 					auto end = icon.icon_path.buffer + icon.icon_path.length - 7;

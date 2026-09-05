@@ -28,6 +28,7 @@ namespace KeyBindType
 
 struct hotkey_t {
 	hotkey_t( ) { }
+	explicit hotkey_t( int defaultKey ) { key = defaultKey; } // 2016-12-13 port: allow default menu bind (INSERT)
 
 	int key = 0, cond = 0;
 	bool enabled = false;
@@ -419,7 +420,7 @@ public:
 	config_option( bool, lock_layout, false );
 
 	config_option( Color_f, ascent, Color_f( 0.588235294f, 0.850980392f, 0.058823529f, 1.0f ) );
-	config_keybind( key );
+	config_option( hotkey_t, key, 45 ); // 2016-12-13 port: default menu key = VK_INSERT, was unbound (0)
 	config_option( bool, watermark, true );
 	config_option( float, size_x, 610.f ); // -@majorkadev
 	config_option( float, size_y, 415.f );
@@ -753,14 +754,14 @@ public:
 
 	config_option( bool, teammates, false );
 
-	config_option( bool, box, false );
+	config_option( bool, box, true ); // 2016-12-13 port: default ESP on for testing
 	config_option( Color_f, box_color, Color_f( 1.0f, 1.0f, 1.0f, 0.50980392156f ) );
 
-	config_option( bool, health, false );
+	config_option( bool, health, true ); // 2016-12-13 port: default ESP on for testing
 	config_option( bool, health_color_override, false );
 	config_option( Color_f, health_color, Color_f( 1.0f, 1.0f, 1.0f ) );
 
-	config_option( bool, name, false );
+	config_option( bool, name, true ); // 2016-12-13 port: default ESP on for testing
 	config_option( Color_f, name_color, Color_f( 1.0f, 1.0f, 1.0f, 0.78431372549f ) );
 
 	config_option( bool, flags, false );
@@ -770,7 +771,7 @@ public:
 
 	config_option( bool, money, false );
 
-	config_option( bool, skeleton, false );
+	config_option( bool, skeleton, true ); // 2016-12-13 port: default ESP on for testing
 	config_option( Color_f, skeleton_color, Color_f( 1.0f, 1.f, 0.66666666666f ) );
 
 	config_option( bool, ammo, false );
@@ -778,7 +779,7 @@ public:
 
 	config_option( bool, distance, false );
 
-	config_option( bool, weapon, false );
+	config_option( bool, weapon, true ); // 2016-12-13 port: default ESP on for testing
 	config_option( bool, weapon_icon, false );
 	config_option( Color_f, weapon_color, Color_f( 1.0f, 1.0f, 1.0f ) );
 

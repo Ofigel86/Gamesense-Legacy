@@ -184,6 +184,10 @@ public:
 
 	float					m_flTimeOfLastKnownInjury;
 
+	// 2016-12-13 port: the 13.12.2016 build carries 2 extra dwords here that were
+	// removed in later revisions; everything below shifts by +8 relative to the 2020 leak.
+	float					m_flUnknown2016[ 2 ];
+
 	float					m_flLastVelocityTestTime;
 	Vector					m_vecVelocityLast;
 	Vector					m_vecTargetAcceleration;
@@ -223,7 +227,7 @@ public:
 
 	float					m_flCameraSmoothHeight;
 	bool					m_bSmoothHeightValid;
-	float					m_flLastTimeVelocityOverTen;
+	// 2016-12-13 port: m_flLastTimeVelocityOverTen does not exist on this build
 
 	float					m_flAimYawMin;
 	float					m_flAimYawMax;
@@ -234,7 +238,7 @@ public:
 	//float					m_flMoveCrouchWalkWeight;
 	//float					m_flMoveRunWeight;
 
-	int						m_nAnimstateModelVersion;
+	// 2016-12-13 port: m_nAnimstateModelVersion does not exist on this build
 
 	void Reset( );
 	void Update( QAngle angles );
@@ -242,4 +246,4 @@ public:
 	float GetDesyncDelta( bool useMinYaw = false );
 	int GetWeightedSequenceFromActivity( int activity );
 	const char* GetWeaponPrefix( );
-};//Size=0x344
+};//Size=0x33C (CS:GO 13.12.2016)

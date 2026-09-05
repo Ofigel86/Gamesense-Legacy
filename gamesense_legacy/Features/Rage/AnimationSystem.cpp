@@ -22,13 +22,19 @@ void AnimationSystem::FrameStage( ) {
 	{
 		constexpr auto te_fire_bullets = hash_32_fnv1a_const("CTEFireBullets");
 
-		for (auto event = *(CEventInfo**)(uintptr_t(m_pClientState.Xor()) + 0x4DEC); event; event = event->pNextEvent)
-		{
-			auto v25 = event->pClientClass;
-			if (v25)
+		// 2016-12-13 port: the client event queue offset (0x4DEC on 2021 builds) is not
+		// reversed for this build yet - walking it would read garbage and crash.
+		// The fire_delay zeroing is a shot-timing optimization only, skip it for now.
+		constexpr auto eventQueueOffset = 0x0;
+		if ( eventQueueOffset ) {
+			for (auto event = *(CEventInfo**)(uintptr_t(m_pClientState.Xor()) + eventQueueOffset); event; event = event->pNextEvent)
 			{
-				if (hash_32_fnv1a_const(v25->m_pNetworkName) == te_fire_bullets)
-					event->fire_delay = 0.0f;
+				auto v25 = event->pClientClass;
+				if (v25)
+				{
+					if (hash_32_fnv1a_const(v25->m_pNetworkName) == te_fire_bullets)
+						event->fire_delay = 0.0f;
+				}
 			}
 		}
 

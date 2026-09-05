@@ -24,6 +24,8 @@ void CCSGOPlayerAnimState::Update( QAngle angles ) {
 const char* CCSGOPlayerAnimState::GetWeaponPrefix( ) {
 	typedef const char* ( __thiscall* fnGetWeaponPrefix )( void* );
 	static const auto get_weapon_adr = Memory::Scan( XorStr( "client.dll" ), XorStr( "53 56 57 8B F9 33 F6 8B 4F 60 8B 01 FF 90 2C 04 00 00 89 47 64" ) );
+	if( !get_weapon_adr ) // 2016-12-13: animstate layout differs on this build
+		return "";
 	return ( ( fnGetWeaponPrefix )get_weapon_adr ) ( this );
 }
 

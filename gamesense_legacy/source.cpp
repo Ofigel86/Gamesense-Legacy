@@ -122,6 +122,11 @@ namespace Interfaces
 		if( !m_pEngine->IsInGame( ) || !m_pEngine->IsConnected( ) )
 			return oNetShowfragmentsGetBool( pConVar );
 
+		// 2016-12-13 port: the fragmentation counters below sit at 2021-build CClientState
+		// offsets (+0x2FC zone) - writing there corrupts engine memory on the 13.12.2016
+		// layout, so the fragment-reset trick stays disabled until those offsets are reversed.
+		return oNetShowfragmentsGetBool( pConVar );
+
 		static uint32_t last_fragment = 0;
 
 		if( _ReturnAddress( ) == reinterpret_cast< void* >( read_sub_channel_data_ret ) && last_fragment > 0 ) {
@@ -154,215 +159,334 @@ namespace Interfaces
 	}
 
 	bool Create( void* reserved ) {
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: init stage 1 - create begin" ) );
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk client" ) );
 		m_pClient = ( IBaseClientDLL* )CreateInterface( XorStr( "client.dll" ), XorStr( "VClient018" ) );
 		if( !m_pClient.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk propmanager" ) );
 		if( !Engine::g_PropManager.Create( m_pClient.Xor( ) ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT propmanager" ) );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk entlist" ) );
 		m_pEntList = ( IClientEntityList* )CreateInterface( XorStr( "client.dll" ), XorStr( "VClientEntityList003" ) );
 		if( !m_pEntList.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk gamemovement" ) );
 		m_pGameMovement = ( IGameMovement* )CreateInterface( XorStr( "client.dll" ), XorStr( "GameMovement001" ) );
 		if( !m_pGameMovement.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk prediction" ) );
 		m_pPrediction = ( IPrediction* )CreateInterface( XorStr( "client.dll" ), XorStr( "VClientPrediction001" ) );
 		if( !m_pPrediction.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
-		m_pInput = *reinterpret_cast< IInput** > ( ( *reinterpret_cast< uintptr_t** >( m_pClient.Xor( ) ) )[ 15 ] + 0x1 );
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk input-vtable-trick" ) );
+		// 2016-12-13 port: &g_Input from CHLClient::CreateMove 'mov ecx, <&g_Input>'
+		// (unique scan, operand @ +1). NOTE: must NOT read Displacement.Data.m_uInput here -
+		// CreateDisplacement() runs later in Create() and would still be zero at this point.
+		{
+			auto InputScan = Memory::Scan( XorStr( "client.dll" ), XorStr( "B9 ? ? ? ? FF 75 08 E8 ? ? ? ? 8B 06" ) );
+			m_pInput = InputScan ? reinterpret_cast< IInput* >( *( std::uintptr_t* )( InputScan + 1 ) ) : nullptr;
+		}
 		if( !m_pInput.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
-		m_pGlobalVars = **reinterpret_cast< CGlobalVars*** > ( ( *reinterpret_cast< uintptr_t** > ( m_pClient.Xor( ) ) )[ 0 ] + 0x1B );
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk globalvars-vtable-trick" ) );
+		// 2016-12-13 port: CHLClient::Init stores its 2nd arg (CGlobalVarsBase*) into a
+		// global slot - unique signature '8B 45 0C 8D 4D 08 A3 ? ? ? ?' (slot operand @ +7).
+		{
+			auto GlobalsScan = Memory::Scan( XorStr( "client.dll" ), XorStr( "8B 45 0C 8D 4D 08 A3 ? ? ? ?" ) );
+			m_pGlobalVars = GlobalsScan ? **reinterpret_cast< CGlobalVars*** >( GlobalsScan + 7 ) : nullptr;
+		}
 		if( !m_pGlobalVars.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
-		m_pWeaponSystem = *( IWeaponSystem** )( Memory::Scan( XorStr( "client.dll" ), XorStr( "8B 35 ? ? ? ? FF 10 0F B7 C0" ) ) + 2 );
+		// 2016-12-13: weapon system global via "mov ecx,[g_WeaponSystem]; mov eax,[ecx]; mov esi,[edi+0x14]; call [eax]"
+		{
+			auto WeaponSystemScan = Memory::Scan( XorStr( "client.dll" ), XorStr( "8B 0D ? ? ? ? 8B 01 8B 77 14 FF 10 0F B7 C0" ) );
+			m_pWeaponSystem = WeaponSystemScan ? *( IWeaponSystem** )( WeaponSystemScan + 2 ) : nullptr;
+		}
 		if( !m_pWeaponSystem.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk engine" ) );
 		m_pEngine = ( IVEngineClient* )CreateInterface( XorStr( "engine.dll" ), XorStr( "VEngineClient014" ) );
 		if( !m_pEngine.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk panel" ) );
 		m_pPanel = ( IPanel* )CreateInterface( XorStr( "vgui2.dll" ), XorStr( "VGUI_Panel009" ) );
 		if( !m_pPanel.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk surface" ) );
 		m_pSurface = ( ISurface* )CreateInterface( XorStr( "vguimatsurface.dll" ), XorStr( "VGUI_Surface031" ) );
 		if( !m_pSurface.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
-		m_pClientMode = **( IClientMode*** )( ( *( DWORD** )m_pClient.Xor( ) )[ 10 ] + 0x5 );
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk clientmode" ) );
+		// 2016-12-13 port: g_pClientMode slot from CHLClient::CreateMove
+		// ('56 8B 35 ? ? ? ? 8B CE 8B 06 FF 90 80 00 00 00', slot @ +3; every call site
+		// in client.dll references the same slot 0x14FD33D4 on this build).
+		{
+			auto ClientModeScan = Memory::Scan( XorStr( "client.dll" ), XorStr( "56 8B 35 ? ? ? ? 8B CE 8B 06 FF 90 80 00 00 00" ) );
+			m_pClientMode = ClientModeScan ? **( IClientMode*** )( ClientModeScan + 3 ) : nullptr;
+		}
 		if( !m_pClientMode.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk cvar" ) );
 		m_pCvar = ( ICVar* )CreateInterface( XorStr( "vstdlib.dll" ), XorStr( "VEngineCvar007" ) );
 		if( !m_pCvar.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk gameevent" ) );
 		m_pGameEvent = ( IGameEventManager* )CreateInterface( XorStr( "engine.dll" ), XorStr( "GAMEEVENTSMANAGER002" ) );
 		if( !m_pGameEvent.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk modelrender" ) );
 		m_pModelRender = ( IVModelRender* )CreateInterface( XorStr( "engine.dll" ), XorStr( "VEngineModel016" ) );
 		if( !m_pModelRender.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk matsystem" ) );
 		m_pMatSystem = ( IMaterialSystem* )CreateInterface( XorStr( "materialsystem.dll" ), XorStr( "VMaterialSystem080" ) );
 		if( !m_pMatSystem.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk phys" ) );
 		m_pPhysSurface = ( IPhysicsSurfaceProps* )CreateInterface( XorStr( "vphysics.dll" ), XorStr( "VPhysicsSurfaceProps001" ) );
 		if( !m_pPhysSurface.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk enginetrace" ) );
 		m_pEngineTrace = ( IEngineTrace* )CreateInterface( XorStr( "engine.dll" ), XorStr( "EngineTraceClient004" ) );
 		if( !m_pEngineTrace.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: init stage 2 - interfaces ok" ) );
 		if( !Engine::CreateDisplacement( reserved ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT at CreateDisplacement" ) );
 			return false;
 		}
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: init stage 3 - displacement ok" ) );
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk movehelper" ) );
 		m_pMoveHelper = ( IMoveHelper* )( Engine::Displacement.Data.m_uMoveHelper );
 		if( !m_pMoveHelper.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk glowmgr" ) );
 		m_pGlowObjManager = ( CGlowObjectManager* )Engine::Displacement.Data.m_uGlowObjectManager;
 		if( !m_pGlowObjManager.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk modelinfo" ) );
 		m_pModelInfo = ( IVModelInfo* )CreateInterface( XorStr( "engine.dll" ), XorStr( "VModelInfoClient004" ) );
 		if( !m_pModelInfo.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
 		// A1 FC BC 58 10  mov eax, g_ClientState
-		m_pClientState = Encrypted_t<CClientState>( **( CClientState*** )( ( *( std::uintptr_t** )m_pEngine.Xor( ) )[ 14 ] + 0x1 ) );
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk clientstate" ) );
+		// 2016-12-13 port: g_pClientState slot from the engine max-player getter
+		// 'A1 ? ? ? ? 8B 80 ? ? ? ? C3' - all occurrences deref the same slot
+		// (engine RVA 0x5C7574 on this build), operand @ +1.
+		{
+			auto ClientStateScan = Memory::Scan( XorStr( "engine.dll" ), XorStr( "A1 ? ? ? ? 8B 80 ? ? ? ? C3" ) );
+			m_pClientState = ClientStateScan ? Encrypted_t<CClientState>( **( CClientState*** )( ClientStateScan + 1 ) ) : Encrypted_t<CClientState>( nullptr );
+		}
 		if( !m_pClientState.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk debugoverlay" ) );
 		m_pDebugOverlay = ( IVDebugOverlay* )CreateInterface( XorStr( "engine.dll" ), XorStr( "VDebugOverlay004" ) );
 		if( !m_pDebugOverlay.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk memalloc" ) );
 		m_pMemAlloc = *( IMemAlloc** )( GetProcAddress( GetModuleHandle( XorStr( "tier0.dll" ) ), XorStr( "g_pMemAlloc" ) ) );
 		if( !m_pMemAlloc.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk enginesound" ) );
 		m_pEngineSound = ( IEngineSound* )CreateInterface( XorStr( "engine.dll" ), XorStr( "IEngineSoundClient003" ) );
 		if( !m_pEngineSound.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk renderbeams" ) );
 		m_pRenderBeams = *( IViewRenderBeams** )( Engine::Displacement.Data.m_uRenderBeams );
 		if( !m_pRenderBeams.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk localize" ) );
 		m_pLocalize = ( ILocalize* )CreateInterface( XorStr( "localize.dll" ), XorStr( "Localize_001" ) );
 		if( !m_pLocalize.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk studiorender" ) );
 		m_pStudioRender = ( IStudioRender* )CreateInterface( XorStr( "studiorender.dll" ), XorStr( "VStudioRender026" ) );
 		if( !m_pStudioRender.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk centerprint" ) );
 		m_pCenterPrint = *( ICenterPrint** )( Engine::Displacement.Data.m_uCenterPrint );
 		if( !m_pCenterPrint.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk renderview" ) );
 		m_pRenderView = ( IVRenderView* )CreateInterface( XorStr( "engine.dll" ), XorStr( "VEngineRenderView014" ) );
 		if( !m_pRenderView.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk leafsystem" ) );
 		m_pClientLeafSystem = ( IClientLeafSystem* )CreateInterface( XorStr( "client.dll" ), XorStr( "ClientLeafSystem002" ) );
 		if( !m_pClientLeafSystem.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk mdlcache" ) );
 		m_pMDLCache = ( IMDLCache* )CreateInterface( XorStr( "datacache.dll" ), XorStr( "MDLCache004" ) );
 		if( !m_pMDLCache.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk enginevgui" ) );
 		m_pEngineVGui = ( IEngineVGui* )CreateInterface( XorStr( "engine.dll" ), XorStr( "VEngineVGui001" ) );
 		if( !m_pEngineVGui.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk inputsystem" ) );
 		m_pInputSystem = ( IInputSystem* )CreateInterface( XorStr( "inputsystem.dll" ), XorStr( "InputSystemVersion001" ) );
 		if( !m_pInputSystem.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: init stage 4 - sdk pointers ok" ) );
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk viewrender" ) );
 		m_pViewRender = **( IViewRender*** )( Memory::Scan( XorStr( "client.dll" ), XorStr( "FF 50 4C 8B 06 8D 4D F4" ) ) - 6 );
 		if( !m_pViewRender.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk fontmanager" ) );
 		m_pFontManager = *( CFontManager** )( Memory::Scan( XorStr( "vguimatsurface.dll" ), XorStr( "74 1D 8B 0D ?? ?? ?? ?? 68" ) ) + 0x4 );
 		if( !m_pFontManager.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: chk hud" ) );
 		m_pHud = *( CHud** )( Memory::Scan( XorStr( "client.dll" ), XorStr( "B9 ? ? ? ? E8 ? ? ? ? 8B 5D 08" ) ) + 1 );
-		if( !m_pHud.IsValid( ) )
-			return false;
+		if( !m_pHud.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
+			return false; }
 
 		m_pDeathNotices = m_pHud->FindHudElement< SFHudDeathNoticeAndBotStatus* >( XorStr( "SFHudDeathNoticeAndBotStatus" ) );
-		if( !m_pDeathNotices.IsValid( ) )
-			return false;
+		// 2016-12-13 port: hud element lookup is unresolved on this build - must NOT abort
+		// init here, otherwise no hook gets installed at all (no menu / no ESP / no diag lines).
+		// m_pDeathNotices stays null, its only consumer (preserve killfeed) is guarded.
 
 		Hooked::CL_FireEvents = reinterpret_cast< Hooked::CL_FireEventsFn >( Memory::Scan( XorStr( "engine.dll" ), XorStr( "55 8B EC 83 EC 08 53 8B 1D ? ? ? ? 56 57 83 BB ? ? 00 00 06" ) ) );
 		if( !Hooked::CL_FireEvents ) {
-			return false;
+			// 2016-12-13: CL_FireEvents unresolved is NON-FATAL - event dispatch via
+			// ProcessTempEntities still works; keep booting (do not return here)
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: warn - CL_FireEvents scan failed, continuing" ) );
 		}
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: init stage 5 - hud/scans ok (hud=%p)" ), ( void* )m_pHud.Xor( ) );
+		// 2016-12-13 port: null-check the device slot before the double deref - a failed
+		// scan here would otherwise crash with an unlogged read at address 0
+		if( Engine::Displacement.Data.m_D3DDevice < 0x10000 ) { // also catches failed-scan (0)+1 garbage
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create - D3D device slot is null" ) );
+			return false;
+		}
 		auto D3DDevice9 = **( IDirect3DDevice9*** )Engine::Displacement.Data.m_D3DDevice;
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: d3d device = %p" ), ( void* )D3DDevice9 );
 		if( !D3DDevice9 ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
 		if( !g_InputSystem.Initialize( D3DDevice9 ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
 		auto pSteamAPI = GetModuleHandleA( XorStr( "steam_api.dll" ) );
 		g_pSteamClient = ( ( ISteamClient * ( __cdecl* )( void ) )GetProcAddress( pSteamAPI, XorStr( "SteamClient" ) ) )( );
 		if( !g_pSteamClient.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
@@ -370,6 +494,7 @@ namespace Interfaces
 		HSteamPipe hSteamPipe = reinterpret_cast< HSteamPipe( __cdecl* ) ( void ) >( GetProcAddress( pSteamAPI, XorStr( "SteamAPI_GetHSteamPipe" ) ) )( );
 		g_pSteamGameCoordinator = ( ISteamGameCoordinator* )g_pSteamClient->GetISteamGenericInterface( hSteamUser, hSteamPipe, XorStr( "SteamGameCoordinator001" ) );
 		if( !g_pSteamGameCoordinator.IsValid( ) ) {
+			g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: ABORT create @line %d" ), __LINE__ );
 			return false;
 		}
 
@@ -400,7 +525,9 @@ namespace Interfaces
 					if( !pProp || strcmp( pProp->m_pVarName, XorStr( "m_iTeam" ) ) )
 						continue;
 
-					m_pPlayerResource = Encrypted_t<CSPlayerResource*>( *reinterpret_cast< CSPlayerResource*** >( std::uintptr_t( pProp->m_pDataTable->m_pProps->m_ProxyFn ) + 0x10 ) );
+					// 2016-12-13 port: reading the m_iTeam proxy code bytes (+0x10) is a 2021
+					// build layout - garbage here. Bombsite ESP needs a proper resolution
+					// (TODO: reverse the proxy), keep the pointer null - usage is guarded.
 					break;
 				}
 
@@ -453,6 +580,7 @@ namespace Interfaces
 		//Engine::g_PropManager.GetProp( XorStr( "DT_CSPlayer" ), XorStr( "m_bNightVisionOn" ), &prop );
 		//m_bNightVisionOnSwap = std::make_shared<RecvPropHook>( prop, &Hooked::m_bNightVisionOn );
 
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: init stage 6 - prehooks" ) );
 		MH_Initialize( );
 
 		//sv_cheats_get_bool
@@ -469,7 +597,15 @@ namespace Interfaces
 		Hooked::oFrameStageNotify = Hooked::HooksManager.HookVirtual<decltype( Hooked::oFrameStageNotify )>( m_pClient.Xor( ), &Hooked::FrameStageNotify, Index::IBaseClientDLL::FrameStageNotify );
 
 		Hooked::oCreateMove = Hooked::HooksManager.HookVirtual<decltype( Hooked::oCreateMove )>( m_pClientMode.Xor( ), &Hooked::CreateMove, Index::CClientModeShared::CreateMove );
-		Hooked::oDoPostScreenEffects = Hooked::HooksManager.HookVirtual<decltype( Hooked::oDoPostScreenEffects )>( m_pClientMode.Xor( ), &Hooked::DoPostScreenEffects, Index::CClientModeShared::DoPostScreenSpaceEffects );
+		// 2016-12-13 port: DISABLED. On this build clientmode vtable slot 44 points at a
+		// CRT DecodePointer thunk, not DoPostScreenEffects - hooking it routed CRT calls
+		// into our detour with a mismatched signature -> stack imbalance -> int3 crash
+		// (hack+0x2C875C, code 0x80000003, last hook 5). Glow stays off until the
+		// correct 2016 index is reversed.
+		constexpr auto kHookDoPostScreenEffects = false;
+		if( kHookDoPostScreenEffects ) {
+			Hooked::oDoPostScreenEffects = Hooked::HooksManager.HookVirtual<decltype( Hooked::oDoPostScreenEffects )>( m_pClientMode.Xor( ), &Hooked::DoPostScreenEffects, Index::CClientModeShared::DoPostScreenSpaceEffects );
+		}
 		Hooked::oOverrideView = Hooked::HooksManager.HookVirtual<decltype( Hooked::oOverrideView )>( m_pClientMode.Xor( ), &Hooked::OverrideView, Index::CClientModeShared::OverrideView );
 
 		Hooked::oDrawSetColor = Hooked::HooksManager.HookVirtual<decltype( Hooked::oDrawSetColor )>( m_pSurface.Xor( ), &Hooked::DrawSetColor, 15 );
@@ -503,7 +639,8 @@ namespace Interfaces
 		Hooked::oCalcViewBob = Hooked::HooksManager.CreateHook<decltype( Hooked::oCalcViewBob ) >( &Hooked::CalcViewBob, ( void* )CalcViewBobAddr );
 
 		static auto CheckAchievementsEnabledAddr = Memory::Scan( XorStr( "client.dll" ), XorStr( "A1 ? ? ? ? 56 8B F1 B9 ? ? ? ? FF 50 34 85 C0 0F 85" ) );
-		Hooked::oCheckAchievementsEnabled = Hooked::HooksManager.CreateHook<decltype( Hooked::oCheckAchievementsEnabled ) >( &Hooked::CheckAchievementsEnabled, ( void* )CheckAchievementsEnabledAddr );
+		if( CheckAchievementsEnabledAddr ) // 2016-12-13: guard unresolved signature
+			Hooked::oCheckAchievementsEnabled = Hooked::HooksManager.CreateHook<decltype( Hooked::oCheckAchievementsEnabled ) >( &Hooked::CheckAchievementsEnabled, ( void* )CheckAchievementsEnabledAddr );
 
 		//auto ReportHitAddr = Memory::Scan( XorStr( "client.dll" ), XorStr( "55 8B EC 8B 55 08 83 EC 1C F6 42 1C 01" ) );
 		//Hooked::oReportHit = Hooked::HooksManager.CreateHook<decltype( Hooked::oReportHit ) >( &Hooked::ReportHit, ( void* )ReportHitAddr );
@@ -520,7 +657,8 @@ namespace Interfaces
 		// auto ProcessPacketAddr = Memory::Scan( XorStr( "engine.dll" ), XorStr( "55 8B EC 83 E4 C0 81 EC ? ? ? ? 53 56 57 8B 7D 08 8B D9" ) );;
 		// Hooked::oProcessPacket = Hooked::HooksManager.CreateHook<decltype( Hooked::oProcessPacket ) >( &Hooked::ProcessPacket, ( void* )ProcessPacketAddr );
 
-		Hooked::oModifyEyePosition = Hooked::HooksManager.CreateHook<decltype( Hooked::oModifyEyePosition ) >( &Hooked::ModifyEyePosition, ( void* )Engine::Displacement.Data.m_ModifyEyePos );
+		if( Engine::Displacement.Data.m_ModifyEyePos ) // 2016-12-13: absent in this build, guarded
+			Hooked::oModifyEyePosition = Hooked::HooksManager.CreateHook<decltype( Hooked::oModifyEyePosition ) >( &Hooked::ModifyEyePosition, ( void* )Engine::Displacement.Data.m_ModifyEyePos );
 
 		//auto PhysicsSimulateAddr = Memory::CallableFromRelative( Memory::Scan( XorStr( "client.dll" ), XorStr( "E8 ? ? ? ? 80 BE ? ? ? ? ? 0F 84 ? ? ? ? 8B 06" ) ) );
 		//Hooked::oPhysicsSimulate = Hooked::HooksManager.CreateHook<decltype( Hooked::oPhysicsSimulate ) >( &Hooked::PhysicsSimulate, ( void* )PhysicsSimulateAddr );
@@ -538,10 +676,13 @@ namespace Interfaces
 		//Hooked::oBuildTransformations = Hooked::HooksManager.CreateHook<decltype( Hooked::oBuildTransformations ) >( &Hooked::BuildTransformations, ( void* )BuildTransformationsAddr );
 
 		auto DoProceduralFootPlantAddr = Memory::Scan( XorStr( "client.dll" ), XorStr( "55 8B EC 83 E4 F0 83 EC 78 56 8B F1 57 8B 56" ) );
-		Hooked::oDoProceduralFootPlant = Hooked::HooksManager.CreateHook<decltype( Hooked::oDoProceduralFootPlant )>( &Hooked::DoProceduralFootPlant, ( void* )DoProceduralFootPlantAddr );
+		if( DoProceduralFootPlantAddr ) // 2016-12-13: absent in this build, guarded
+			Hooked::oDoProceduralFootPlant = Hooked::HooksManager.CreateHook<decltype( Hooked::oDoProceduralFootPlant )>( &Hooked::DoProceduralFootPlant, ( void* )DoProceduralFootPlantAddr );
 
-		auto ShouldSkipAnimationFrame = ( Memory::CallableFromRelative( Memory::Scan( XorStr( "client.dll" ), XorStr( "E8 ? ? ? ? 88 44 24 0B" ) ) ) );
-		Hooked::oShouldSkipAnimationFrame = Hooked::HooksManager.CreateHook<decltype( Hooked::oShouldSkipAnimationFrame )>( &Hooked::ShouldSkipAnimationFrame, ( void* )ShouldSkipAnimationFrame );
+		auto ShouldSkipAnimationFrameScan = Memory::Scan( XorStr( "client.dll" ), XorStr( "E8 ? ? ? ? 88 44 24 0B" ) );
+		auto ShouldSkipAnimationFrame = ShouldSkipAnimationFrameScan ? ( Memory::CallableFromRelative( ShouldSkipAnimationFrameScan ) ) : 0;
+		if( ShouldSkipAnimationFrame ) // 2016-12-13: absent in this build, guarded
+			Hooked::oShouldSkipAnimationFrame = Hooked::HooksManager.CreateHook<decltype( Hooked::oShouldSkipAnimationFrame )>( &Hooked::ShouldSkipAnimationFrame, ( void* )ShouldSkipAnimationFrame );
 
 		auto IsUsingStaticPropDebugModeAddr = Memory::CallableFromRelative( Memory::Scan( XorStr( "engine.dll" ), XorStr( "E8 ?? ?? ?? ?? 84 C0 8B 45 08" ) ) );
 		Hooked::oIsUsingStaticPropDebugMode = Hooked::HooksManager.CreateHook<decltype( Hooked::oIsUsingStaticPropDebugMode ) >( &Hooked::IsUsingStaticPropDebugMode, ( void* )IsUsingStaticPropDebugModeAddr );
@@ -575,6 +716,7 @@ namespace Interfaces
 
 		Hooked::HooksManager.Enable( );
 		g_Vars.globals.menuOpen = true;
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: init stage 7 - HOOKS INSTALLED, menu should show" ) );
 
 		return true;
 	}

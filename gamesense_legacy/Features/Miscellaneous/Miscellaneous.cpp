@@ -243,6 +243,9 @@ void Miscellaneous::PreserveKillfeed( ) {
 		m_flSpawnTime = local->m_flSpawnTime( );
 	}
 
+	if( !m_pDeathNotices.IsValid( ) ) // 2016-12-13 port: hud lookup unresolved, killfeed preserve stays off
+		return;
+
 	for( int i = 0; i < m_pDeathNotices->m_vecDeathNotices.Count( ); i++ ) {
 		auto cur = &m_pDeathNotices->m_vecDeathNotices[ i ];
 		if( !cur ) {
@@ -367,7 +370,12 @@ void Miscellaneous::RemoveSmoke( ) {
 		float m_flParameters[ POST_PROCESS_PARAMETER_COUNT ];
 	};
 
-	static auto PostProcessParameters = *reinterpret_cast< PostProcessParameters_t** >( Memory::Scan( XorStr( "client.dll" ), XorStr( "0F 11 05 ? ? ? ? 0F 10 87" ) ) + 3 );
+	static auto ppScan = Memory::Scan( XorStr( "client.dll" ), XorStr( "0F 11 05 ? ? ? ? 0F 10 87" ) );
+	if( !ppScan ) // 2016-12-13: unresolved on this build
+		return;
+	static auto PostProcessParameters = *reinterpret_cast< PostProcessParameters_t** >( ppScan + 3 );
+	if( !PostProcessParameters )
+		return;
 	PostProcessParameters->m_flParameters[ PPPN_VIGNETTE_BLUR_STRENGTH ] = 0.f;
 	PostProcessParameters->m_flParameters[ PPPN_SCREEN_BLUR_STRENGTH ] = 0.f;
 }

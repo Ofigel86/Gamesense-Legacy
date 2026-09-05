@@ -32,10 +32,12 @@ void __fastcall Hooked::FrameStageNotify( void* ecx, void* edx, ClientFrameStage
 		if( !noob ) {
 			static DWORD lol = Memory::Scan( XorStr( "engine.dll" ), XorStr( "55 8B EC A1 ? ? ? ? 81 EC ? ? ? ? B9 ? ? ? ? 53 8B 98" ) ) + 0xBC + 1;
 
-			DWORD old;
-			VirtualProtect( ( LPVOID )lol, 1, PAGE_READWRITE, &old );
-			*( int* )lol = 62;
-			VirtualProtect( ( LPVOID )lol, 1, old, &old );
+			if( lol > 0x10000 ) { // 2016-12-13: skip the one-byte patch when the signature did not resolve
+				DWORD old;
+				VirtualProtect( ( LPVOID )lol, 1, PAGE_READWRITE, &old );
+				*( int* )lol = 62;
+				VirtualProtect( ( LPVOID )lol, 1, old, &old );
+			}
 			noob = true;
 		}
 	};
@@ -105,7 +107,7 @@ void __fastcall Hooked::FrameStageNotify( void* ecx, void* edx, ClientFrameStage
 			if( pLocal ) {
 				g_ShotHandling.ProcessShots( );
 
-				if( g_Vars.esp.remove_smoke )
+				if( g_Vars.esp.remove_smoke && Engine::Displacement.Data.m_uSmokeCount ) // 2016-12-13: guarded, unresolved on this build
 					*( int* )Engine::Displacement.Data.m_uSmokeCount = 0;
 
 				auto aim_punch = pLocal->m_aimPunchAngle( ) * g_Vars.weapon_recoil_scale->GetFloat( ) * g_Vars.view_recoil_tracking->GetFloat( );
@@ -145,6 +147,7 @@ void __fastcall Hooked::FrameStageNotify( void* ecx, void* edx, ClientFrameStage
 			g_LagCompensation.Update( );
 		}
 
-		Hooked::CL_FireEvents( );
+		if( Hooked::CL_FireEvents ) // 2016-12-13: guard unresolved engine signature
+			Hooked::CL_FireEvents( );
 	}
 }

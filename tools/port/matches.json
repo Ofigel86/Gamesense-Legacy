@@ -1,0 +1,1115 @@
+{
+ "gamesense_legacy/Features/Miscellaneous/KitParser.cpp:354": {
+  "module": "client.dll",
+  "pattern": "E8 ? ? ? ? FF 76 0C 8D 48 04 E8",
+  "hits": [
+   "0x3c6721"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/Features/Miscellaneous/KitParser.cpp:429": {
+  "module": "client.dll",
+  "pattern": "8D 9A ?? ?? ?? ?? 89 45 9C",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/Features/Miscellaneous/KitParser.cpp:455": {
+  "module": "client.dll",
+  "pattern": "74 43 8B 81 ?? ?? ?? ?? 89 45 FC",
+  "hits": [
+   "0x58ed51"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/Features/Miscellaneous/Miscellaneous.cpp:291": {
+  "module": "client.dll",
+  "pattern": "A3 ? ? ? ? 57 8B CB",
+  "hits": [
+   "0x3bf16a"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/Features/Miscellaneous/Miscellaneous.cpp:335": {
+  "module": "client.dll",
+  "pattern": "80 3D ? ? ? ? ? 53 56 57 0F 85",
+  "hits": [
+   "0x36b5d6"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/Features/Miscellaneous/Miscellaneous.cpp:370": {
+  "module": "client.dll",
+  "pattern": "0F 11 05 ? ? ? ? 0F 10 87",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/Features/Rage/EnginePrediction.cpp:151": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F8 81 EC ? ? ? ? 53 8B D9 56 57 83 BB ? ? ? ? ? 75 50 8B 0D",
+  "hits": [
+   "0x1b1230"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/Features/Rage/EnginePrediction.cpp:152": {
+  "module": "client.dll",
+  "pattern": "56 8B F1 57 8B BE ? ? ? ? 83 EF 01 78 72 90 8B 86",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/Features/Rage/ServerAnimations.cpp:114": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F8 81 EC ? ? ? ? 53 56 57 8B F9 8B 17",
+  "hits": [
+   "0x33f990"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/Features/Rage/ServerAnimations.cpp:115": {
+  "module": "xorstr( \"server.dll\" )",
+  "pattern": "55 8B EC 83 EC 2C 53 56 8B 75 08 8B D9",
+  "hits": "NO-BINARY"
+ },
+ "gamesense_legacy/Hooking/Hooks/AddBoxOverlay.cpp:10": {
+  "module": "client.dll",
+  "pattern": "3B 3D ?? ?? ?? ?? 75 4C",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/Hooking/Hooks/DrawSetColor.cpp:13": {
+  "module": "client.dll",
+  "pattern": "6A 00 FF 50 3C 8B 0D ? ? ? ? FF B7",
+  "hits": [
+   "0x45d0fb"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/Hooking/Hooks/DrawSetColor.cpp:14": {
+  "module": "client.dll",
+  "pattern": "FF 50 3C 8B 4C 24 20",
+  "hits": [
+   "0x45cd00"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/Hooking/Hooks/DrawSetColor.cpp:16": {
+  "module": "client.dll",
+  "pattern": "0F 82 ? ? ? ? FF 50 3C",
+  "hits": [
+   "0x45ceae"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/Hooking/Hooks/DrawSetColor.cpp:17": {
+  "module": "client.dll",
+  "pattern": "FF B7 ? ? ? ? 8B 01 FF 90 ? ? ? ? 8B 4C 24 24",
+  "hits": [
+   "0x45cf60"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/Hooking/Hooks/FrameStageNotify.cpp:33": {
+  "module": "engine.dll",
+  "pattern": "55 8B EC A1 ? ? ? ? 81 EC ? ? ? ? B9 ? ? ? ? 53 8B 98",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/Hooking/Hooks/FrameStageNotify.cpp:55": {
+  "module": "client.dll",
+  "pattern": "8B 0D ?? ?? ?? ?? 85 C0 74 0A 8B 01 FF 50 78 83 C0 54",
+  "hits": [
+   "0x2a117e"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/Hooking/Hooks/IsConnected.cpp:14": {
+  "module": "client.dll",
+  "pattern": "84 C0 75 04 B0 01 5F",
+  "hits": [
+   "0x3cdff0"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/Hooking/Hooks/IsHltv.cpp:7": {
+  "module": "client.dll",
+  "pattern": "84 C0 75 0D F6 87",
+  "hits": [
+   "0x3ac496"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/Hooking/Hooks/IsHltv.cpp:8": {
+  "module": "client.dll",
+  "pattern": "84 C0 75 38 8B 0D ? ? ? ? 8B 01 8B 80",
+  "hits": [
+   "0x3ea3e9"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/Hooking/Hooks/PaintTraverse.cpp:42": {
+  "module": "vguimatsurface.dll",
+  "pattern": "55 8B EC 83 E4 C0 83 EC 38",
+  "hits": [
+   "0xcf20"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/Hooking/Hooks/PaintTraverse.cpp:43": {
+  "module": "vguimatsurface.dll",
+  "pattern": "8B 0D ? ? ? ? 56 C6 05",
+  "hits": [
+   "0xd100"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/Hooking/Hooks/RetrieveMessage.cpp:117": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F8 8B 4D 08 BA ? ? ? ? E8 ? ? ? ? 85 C0 75 12",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/Hooking/Hooks/WriteUsercmdDeltaToBuffer.cpp:20": {
+  "module": "engine.dll",
+  "pattern": "84 C0 74 04 B0 01 EB 02 32 C0 8B FE 46 3B F3 7E C9 84 C0 0F 84",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/Renderer/Render.cpp:590": {
+  "module": "client.dll",
+  "pattern": "0F 10 05 ? ? ? ? 8D 85 ? ? ? ? B9",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Classes/Player.cpp:138": {
+  "module": "client.dll",
+  "pattern": "E8 ? ? ? ? F3 0F 10 4D ? 83 C4 08 F3 0F 10 45 ? F3 0F 59 C0",
+  "hits": [
+   "0x1d257b"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Classes/Player.cpp:201": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 57 8B F9 8B 97 ? ? ? ? 85 D2",
+  "hits": [
+   "0x1d95d0"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Classes/Player.cpp:358": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 56 57 8B F9 8B B7 E8",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Classes/Player.cpp:366": {
+  "module": "client.dll",
+  "pattern": "FF 90 ? ? ? ? FF 35 ? ? ? ? 8B 4C 24 3C",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Classes/Player.cpp:373": {
+  "module": "client.dll",
+  "pattern": "FF 90 ? ? ? ? 8B 86 ? ? ? ? 83 F8 FF",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Classes/Player.cpp:490": {
+  "module": "client.dll",
+  "pattern": "E8 ? ? ? ? 89 44 24 5C",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Classes/Player.cpp:586": {
+  "module": "xorstr( \"server.dll\" )",
+  "pattern": "8B 15 ? ? ? ? 33 C9 83 7A 18 01",
+  "hits": "NO-BINARY"
+ },
+ "gamesense_legacy/SDK/Classes/PlayerAnimState.cpp:26": {
+  "module": "client.dll",
+  "pattern": "53 56 57 8B F9 33 F6 8B 4F 60 8B 01 FF 90 2C 04 00 00 89 47 64",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Classes/entity.cpp:509": {
+  "module": "client.dll",
+  "pattern": "E8 ? ? ? ? 5E 83 F8 FF",
+  "hits": [
+   "0x3db8a8"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Classes/entity.cpp:588": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 51 53 8B D9 56 57 8D B3 ? ? ? ? FF 15",
+  "hits": [
+   "0x1c9350"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Classes/entity.cpp:639": {
+  "module": "client.dll",
+  "pattern": "53 8B DC 83 EC 08 83 E4 F8 83 C4 04 55 8B 6B 04 89 6C 24 04 8B EC 83 EC 10 56 57 8B 7B",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:40": {
+  "module": "client.dll",
+  "pattern": "80 3D ? ? ? ? ? 74 16 A1 ? ? ? ? 48 C7 81",
+  "hits": [
+   "0x1ce280"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:50": {
+  "module": "client.dll",
+  "pattern": "FF B7 ?? ?? ?? ?? 52",
+  "hits": [
+   "0x1ce103",
+   "0x357c62",
+   "0x357cb5",
+   "0x357d0e",
+   "0x357d64",
+   "0x357dba",
+   "0x357e10",
+   "0x357e69"
+  ],
+  "n": 13
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:51": {
+  "module": "client.dll",
+  "pattern": "8B 89 ?? ?? ?? ?? 8D 0C D1",
+  "hits": [
+   "0x3e6b26"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:53": {
+  "module": "client.dll",
+  "pattern": "8D 8F ?? ?? ?? ?? 6A 01 C7 87",
+  "hits": [
+   "0x3ac51d"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:57": {
+  "module": "client.dll",
+  "pattern": "8D 87 ?? ?? ?? ?? 50 E8 ?? ?? ?? ?? 8B 06",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:60": {
+  "module": "client.dll",
+  "pattern": "8B B7 ?? ?? ?? ?? 89 74 24 20",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:61": {
+  "module": "client.dll",
+  "pattern": "FF 15 ?? ?? ?? ?? 80 BE ?? ?? ?? ?? ?? 0F 84 ?? ?? ?? ??",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:62": {
+  "module": "client.dll",
+  "pattern": "89 86 ?? ?? ?? ?? E8 ?? ?? ?? ?? FF 75 08",
+  "hits": [
+   "0x1ca4c0"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:63": {
+  "module": "client.dll",
+  "pattern": "8B 8F ?? ?? ?? ?? 89 4C 24 1C",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:79": {
+  "module": "client.dll",
+  "pattern": "E8 ? ? ? ? 83 7D D8 00 7C 0F",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:103": {
+  "module": "client.dll",
+  "pattern": "8A 87 ?? ?? ?? ?? 8D 5F F8",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:111": {
+  "module": "client.dll",
+  "pattern": "8B 8E ?? ?? ?? ?? 85 C9 74 3E",
+  "hits": [
+   "0x3a51a6"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:112": {
+  "module": "client.dll",
+  "pattern": "89 86 ?? ?? ?? ?? E8 ?? ?? ?? ?? 80 BE ?? ?? ?? ?? ??",
+  "hits": [
+   "0x3a5192"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:133": {
+  "module": "client.dll",
+  "pattern": "80 BF ?? ?? ?? ?? ?? 0F 84 ?? ?? ?? ?? 83 BF ?? ?? ?? ?? ?? 74 7C",
+  "hits": [
+   "0x3ac4ea"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:158": {
+  "module": "client.dll",
+  "pattern": "83 BE ? ? ? ? ? 7F 67",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:159": {
+  "module": "client.dll",
+  "pattern": "C6 86 ? ? ? ? ? FF 50 04",
+  "hits": [
+   "0x5482c1"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:196": {
+  "module": "client.dll",
+  "pattern": "80 BF ?? ?? ?? ?? ?? 0F 85 ?? ?? ?? ?? F3 0F 7E 87 ?? ?? ?? ??",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:198": {
+  "module": "client.dll",
+  "pattern": "56 8B F1 0F 57 C0 C7 86 ?? ?? ?? ?? ?? ?? ?? ??",
+  "hits": [
+   "0x1baf10"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:199": {
+  "module": "client.dll",
+  "pattern": "E8 ?? ?? ?? ?? FF 75 08 8B 8E ?? ?? ?? ??",
+  "hits": [
+   "0x1ca4c6"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:200": {
+  "module": "client.dll",
+  "pattern": "E8 ?? ?? ?? ?? 83 7E 10 00 74 64",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:201": {
+  "module": "client.dll",
+  "pattern": "E8 ?? ?? ?? ?? 8B 87 ?? ?? ?? ?? 8D 8C 24 ?? ?? ?? ?? 8B 7C 24 18",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:202": {
+  "module": "client.dll",
+  "pattern": "E8 ?? ?? ?? ?? F3 0F 10 45 ?? 8D 84 24 ?? ?? ?? ??",
+  "hits": [
+   "0x1da55f"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:204": {
+  "module": "client.dll",
+  "pattern": "53 8B D9 F6 C3 03 74 0B FF 15 ?? ?? ?? ?? 84 C0 74 01 CC C7 83 ?? ?? ?? ?? ?? ?? ?? ?? 8B CB",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:205": {
+  "module": "client.dll",
+  "pattern": "56 8B F1 57 8D 8E ?? ?? ?? ?? E8 ?? ?? ?? ?? 8D 8E ?? ?? ?? ?? E8 ?? ?? ?? ?? 83 BE ?? ?? ?? ?? ??",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:206": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 EC 08 8B 45 08 56 57 8B F9 8D 8F",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:207": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F0 81 EC ?? ?? ?? ?? 33 D2",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:208": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F0 81 EC ?? ?? ?? ?? 8B 81",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:210": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 EC 10 53 8B D9 89 55 F8 56 57 89 5D F4 8B 0B 89 4D F0",
+  "hits": [
+   "0x6289b0"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:211": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F0 B8 ?? ?? ?? ?? E8 ?? ?? ?? ?? A1 ?? ?? ?? ??",
+  "hits": [
+   "0x629b60"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:212": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 EC 10 53 56 57 8B 7D 10 8B D9 F3 0F 11 5D ??",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:213": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F8 81 EC ?? ?? ?? ?? 8B C1 89 54 24 04 89 44 24 2C 56 57 8B 00",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:218": {
+  "module": "engine.dll",
+  "pattern": "75 30 8B 87 ?? ?? ?? ??",
+  "hits": [
+   "0xe8f08"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:219": {
+  "module": "engine.dll",
+  "pattern": "74 0F 80 BF ?? ?? ?? ?? ??",
+  "hits": [
+   "0xe4254"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:231": {
+  "module": "client.dll",
+  "pattern": "8B 0D ?? ?? ?? ?? 8B 46 08 68",
+  "hits": [
+   "0x2a3d38"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:232": {
+  "module": "client.dll",
+  "pattern": "B9 ?? ?? ?? ?? F3 0F 11 04 24 FF 50 10",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:233": {
+  "module": "client.dll",
+  "pattern": "8B 0D ?? ?? ?? ?? BA ?? ?? ?? ?? E8 ?? ?? ?? ?? 83 C4",
+  "hits": [
+   "0x19aff2"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:234": {
+  "module": "client.dll",
+  "pattern": "89 ? ? ? ? ? F3 0F 10 48 20",
+  "hits": [
+   "0x318ac2"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:236": {
+  "module": "client.dll",
+  "pattern": "A1 ?? ?? ?? ?? F6 44 F0 04 01 74 0B",
+  "hits": [
+   "0x1d4320"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:237": {
+  "module": "client.dll",
+  "pattern": "0F 11 05 ?? ?? ?? ?? 83 C8 01",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:238": {
+  "module": "client.dll",
+  "pattern": "85 C0 75 30 38 86",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:239": {
+  "module": "client.dll",
+  "pattern": "A1 ?? ?? ?? ?? FF 10 A1 ?? ?? ?? ?? B9",
+  "hits": [
+   "0x35c07f"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:240": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 EC 08 8B 15 ?? ?? ?? ?? 0F 57 C0",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:241": {
+  "module": "client.dll",
+  "pattern": "8B 35 ? ? ? ? 8D 4C 24 20",
+  "hits": [
+   "0x2b52f6"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:242": {
+  "module": "engine.dll",
+  "pattern": "03 05 ? ? ? ? 83 CF 10",
+  "hits": [
+   "0x1b0706"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:243": {
+  "module": "image_server",
+  "pattern": "8B 15 ? ? ? ? 33 C9 83 7A 18 01",
+  "hits": "NO-BINARY"
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:244": {
+  "module": "image_server",
+  "pattern": "8D 87 ? ? ? ? 89 46 08 C7 46 ? ? ? ? ? EB 06",
+  "hits": "NO-BINARY"
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:245": {
+  "module": "image_server",
+  "pattern": "8B 8F ?? ?? ?? ?? 85 C9 74 06 56",
+  "hits": "NO-BINARY"
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:246": {
+  "module": "image_server",
+  "pattern": "FF 86 ?? ?? ?? ?? 8B CE 89 86 ?? ?? ?? ??",
+  "hits": "NO-BINARY"
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:247": {
+  "module": "client.dll",
+  "pattern": "B9 ?? ?? ?? ?? E8 ?? ?? ?? ?? 8B 5D 08",
+  "hits": [
+   "0x2660b1"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:248": {
+  "module": "client.dll",
+  "pattern": "56 52 FF 50 18",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:249": {
+  "module": "client.dll",
+  "pattern": "A2 ? ? ? ? 8B 45 E8",
+  "hits": [
+   "0x1e482f"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:250": {
+  "module": "client.dll",
+  "pattern": "3B 3D ?? ?? ?? ?? 75 4C",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:251": {
+  "module": "shaderapidx9.dll",
+  "pattern": "A1 ?? ?? ?? ?? 50 8B 08 FF 51 0C",
+  "hits": [
+   "0x2da0e"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:252": {
+  "module": "engine.dll",
+  "pattern": "B9 ? ? ? ? 80 65 FC FE 6A 00",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:253": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 EC 1C 8B 0D ? ? ? ? 53 56",
+  "hits": [
+   "0x1e45a0"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:254": {
+  "module": "engine.dll",
+  "pattern": "55 8B EC 56 8B F1 8B 86 ? ? ? ? 85 C0 74 24 48 83 F8 02 77 2C 83 BE ? ? ? ? ? 8D 8E ? ? ? ? 74 06 32 C0 84 C0 EB 10 E8 ? ? ? ? 84 C0 EB 07 83 BE ? ? ? ? ? 0F 94 C0 84 C0 74 07 B0 01 5E 5D C2 0C 00",
+  "hits": [
+   "0x250750"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:255": {
+  "module": "client.dll",
+  "pattern": "E8 ? ? ? ? 8B 06 8B CE FF 90 ? ? ? ? 85 C0 74 4E",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:256": {
+  "module": "client.dll",
+  "pattern": "56 8D 51 3C BE",
+  "hits": [
+   "0x2a68c0"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:257": {
+  "module": "client.dll",
+  "pattern": "0F B7 05 ? ? ? ? 3D ? ? ? ? 74 3F",
+  "hits": [
+   "0x1e43b0"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:258": {
+  "module": "engine.dll",
+  "pattern": "FF 50 34 8B 1D ? ? ? ? 85 C0 74 16 FF B6",
+  "hits": [
+   "0x24f734"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:259": {
+  "module": "engine.dll",
+  "pattern": "FF 50 34 85 C0 74 12 53 FF 75 0C 68",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:260": {
+  "module": "engine.dll",
+  "pattern": "55 8B EC 83 E4 F0 B8 ? ? ? ? E8 ? ? ? ? 56 57 8B F9 89 7C 24 18",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:261": {
+  "module": "engine.dll",
+  "pattern": "55 8B EC 83 E4 C0 81 EC ? ? ? ? 53 56 57 8B 7D 08 8B D9",
+  "hits": [
+   "0x2502b0"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:267": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F8 51 53 56 57 8B F1 E8",
+  "hits": [
+   "0x1e53a0",
+   "0x4715e0"
+  ],
+  "n": 2
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:268": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F8 83 EC 64 53 56 57 8B F1 E8",
+  "hits": [
+   "0x1e5560"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:269": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 51 56 8B F1 85 F6 74 68",
+  "hits": [
+   "0x2f62d0"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:270": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 51 53 56 8B 75 08 8B D9 57 6B FE 2C 89 5D FC",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:271": {
+  "module": "engine.dll",
+  "pattern": "55 8B EC 81 EC ? ? ? ? 56 57 8B F9 C7 45",
+  "hits": [
+   "0x13caa0"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:272": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 56 8B F1 B9 ?? ?? ?? ?? C7 46",
+  "hits": [
+   "0x3e5ba0"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:273": {
+  "module": "client.dll",
+  "pattern": "56 6A 01 68 ?? ?? ?? ?? 8B F1",
+  "hits": [
+   "0x3e5cb0"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:274": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F8 83 EC 18 56 57 8B F9 F3 0F 11 54 24",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:275": {
+  "module": "engine.dll",
+  "pattern": "53 56 57 8B DA 8B F9 FF 15",
+  "hits": [
+   "0x9cd40"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:276": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 7D 08 FF 56 8B F1 74 3D",
+  "hits": [
+   "0x1d34d0"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:277": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F8 83 EC 0C 53 8B 5D 08 8B C3 56 83 E0 04",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:278": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F8 81 EC ? ? ? ? 53 8B D9 56 57 83 BB ? ? ? ? ? 75 50 8B 0D",
+  "hits": [
+   "0x1b1230"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:279": {
+  "module": "client.dll",
+  "pattern": "56 8B F1 57 8B BE ?? ?? ?? ?? 83 EF 01 78 72 90 8B 86",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:280": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 EC 10 53 56 57 8B F9 8B 87 ?? ?? ?? ?? C1 E8 16",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:281": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 EC 0C 53 56 8B 71 58",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:282": {
+  "module": "engine.dll",
+  "pattern": "55 8B EC 80 7D 0C 00 F3 0F 10 4D",
+  "hits": [
+   "0x24ca10"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:283": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 53 8B 5D 08 56 57 8B F9 33 F6 39 77 28",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:284": {
+  "module": "client.dll",
+  "pattern": "53 8B DC 83 EC 08 83 E4 F8 83 C4 04 55 8B 6B 04 89 6C 24 04 8B EC 83 EC 10 56 57 8B 7B",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:285": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F8 83 EC 70 6A 58 8D 44 24 1C 89 4C 24 08 6A 00 50",
+  "hits": [
+   "0x7292e0"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:286": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F8 51 53 56 8B D9 8B 0D",
+  "hits": [
+   "0x348b30"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:287": {
+  "module": "engine.dll",
+  "pattern": "55 8B EC 53 8B 5D 08 56 8B F1 85 DB 74 57 8B 4E 14 83 F9 10 72 04 8B 06 EB 02",
+  "hits": [
+   "0x37460"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:288": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 8B 45 08 57 8B F9 8B 4F 04 85 C9 75 15 8B",
+  "hits": [
+   "0x33e6c0"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:289": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 EC 48 53 8B 5D 08 89 4D F4",
+  "hits": [
+   "0x1cc160"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:290": {
+  "module": "client.dll",
+  "pattern": "E8 ?? ?? ?? ?? 8D 47 FC",
+  "hits": [
+   "0x1cd758",
+   "0x1cdb08"
+  ],
+  "n": 2
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:291": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 EC 08 8B 15 ?? ?? ?? ?? 0F 57 C0",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:292": {
+  "module": "client.dll",
+  "pattern": "E8 ? ? ? ? A1 ? ? ? ? F3 0F 10 45 ? F3 0F 11 40",
+  "hits": [
+   "0x319aa1"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/Displacement.cpp:293": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F0 83 EC 7C 56 52",
+  "hits": [
+   "0x1ac540"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/Utils/Math.cpp:38": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F8 F3 0F 10 42",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/source.cpp:119": {
+  "module": "engine.dll",
+  "pattern": "85 C0 74 12 53 FF 75 0C 68 ? ? ? ? FF 15 ? ? ? ? 83 C4 0C",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/source.cpp:120": {
+  "module": "engine.dll",
+  "pattern": "8B 1D ? ? ? ? 85 C0 74 16 FF B6",
+  "hits": [
+   "0x24f737"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/source.cpp:149": {
+  "module": "client.dll",
+  "pattern": "85 C0 75 30 38 86",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/source.cpp:191": {
+  "module": "client.dll",
+  "pattern": "8B 35 ? ? ? ? FF 10 0F B7 C0",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/source.cpp:331": {
+  "module": "client.dll",
+  "pattern": "FF 50 4C 8B 06 8D 4D F4",
+  "hits": [
+   "0x1af786"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/source.cpp:336": {
+  "module": "vguimatsurface.dll",
+  "pattern": "74 1D 8B 0D ?? ?? ?? ?? 68",
+  "hits": [
+   "0x10cb0"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/source.cpp:341": {
+  "module": "client.dll",
+  "pattern": "B9 ? ? ? ? E8 ? ? ? ? 8B 5D 08",
+  "hits": [
+   "0x2660b1"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/source.cpp:349": {
+  "module": "engine.dll",
+  "pattern": "55 8B EC 83 EC 08 53 8B 1D ? ? ? ? 56 57 83 BB ? ? 00 00 06",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/source.cpp:502": {
+  "module": "client.dll",
+  "pattern": "55 8B EC A1 ? ? ? ? 83 EC 10 56 8B F1 B9",
+  "hits": [
+   "0x1afe00"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/source.cpp:505": {
+  "module": "client.dll",
+  "pattern": "A1 ? ? ? ? 56 8B F1 B9 ? ? ? ? FF 50 34 85 C0 0F 85",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/source.cpp:508": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 8B 55 08 83 EC 1C F6 42 1C 01",
+  "hits": [
+   "0x3a3c80"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/source.cpp:511": {
+  "module": "engine.dll",
+  "pattern": "55 8B EC 81 EC ?? ?? ?? ?? 53 56 57 8B 3D ?? ?? ?? ?? 8A",
+  "hits": [
+   "0xe4210"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/source.cpp:514": {
+  "module": "client.dll",
+  "pattern": "E8 ? ? ? ? 89 44 24 20 8B 06",
+  "hits": [
+   "0x20aa2d"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/source.cpp:517": {
+  "module": "engine.dll",
+  "pattern": "55 8B EC 83 E4 F0 B8 ? ? ? ? E8 ? ? ? ? 56 57 8B F9 89 7C 24 18",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/source.cpp:520": {
+  "module": "engine.dll",
+  "pattern": "55 8B EC 83 E4 C0 81 EC ? ? ? ? 53 56 57 8B 7D 08 8B D9",
+  "hits": [
+   "0x2502b0"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/source.cpp:525": {
+  "module": "client.dll",
+  "pattern": "E8 ? ? ? ? 80 BE ? ? ? ? ? 0F 84 ? ? ? ? 8B 06",
+  "hits": [
+   "0x208f89"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/source.cpp:528": {
+  "module": "engine.dll",
+  "pattern": "8B 0D ? ? ? ? 8D 95 ? ? ? ? 6A 00 C6",
+  "hits": [
+   "0x1b382a"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/source.cpp:531": {
+  "module": "engine.dll",
+  "pattern": "55 8B EC 81 EC ? ? ? ? 53 8B D9 89 5D F8 80",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/source.cpp:534": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F0 B8 ? ? ? ? E8 ? ? ? ? 56 8B 75 08 57 8B F9 85 F6",
+  "hits": [
+   "0x1cbd60"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/source.cpp:537": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F0 81 EC ? ? ? ? 56 57 8B F9 8B 0D ? ? ? ? 89 7C 24 1C",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/source.cpp:540": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F0 83 EC 78 56 8B F1 57 8B 56",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/source.cpp:543": {
+  "module": "client.dll",
+  "pattern": "E8 ? ? ? ? 88 44 24 0B",
+  "hits": [],
+  "n": 0
+ },
+ "gamesense_legacy/source.cpp:546": {
+  "module": "engine.dll",
+  "pattern": "E8 ?? ?? ?? ?? 84 C0 8B 45 08",
+  "hits": [
+   "0xa183f",
+   "0x283d3d"
+  ],
+  "n": 2
+ },
+ "gamesense_legacy/source.cpp:549": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 51 56 8B F1 80 BE ? ? ? ? ? 74 36",
+  "hits": [
+   "0x3abae0"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/source.cpp:552": {
+  "module": "shaderapidx9.dll",
+  "pattern": "55 8B EC 83 E4 F8 81 EC ? ? ? ? 53 56 57",
+  "hits": [
+   "0xa880"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/source.cpp:570": {
+  "module": "client.dll",
+  "pattern": "E8 ? ? ? ? 84 C0 74 F3",
+  "hits": [
+   "0x45e8d5"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/source.cpp:573": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 83 E4 F8 83 EC 78 56 57 8B 3D",
+  "hits": [
+   "0x45c850"
+  ],
+  "n": 1
+ },
+ "gamesense_legacy/SDK/sdk.hpp:3149": {
+  "module": "xorstr( \"server.dll\" )",
+  "pattern": "55 8B EC 8B 55 08 83 EC 30",
+  "hits": "NO-BINARY"
+ },
+ "gamesense_legacy/SDK/sdk.hpp:3268": {
+  "module": "client.dll",
+  "pattern": "55 8B EC 53 8B 5D 08 56 57 8B F9 33 F6 39 77 28",
+  "hits": [],
+  "n": 0
+ }
+}

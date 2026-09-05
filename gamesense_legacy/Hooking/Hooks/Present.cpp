@@ -7,9 +7,17 @@
 #include "../../SDK/Classes/entity.hpp"
 #include "../../SDK/Classes/player.hpp"
 #include "../../Utils/Config.hpp"
+#include "../../Utils/LogSystem.hpp" // 2016-12-13 port: render-path diagnostics
 
 HRESULT __stdcall Hooked::Present( LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion ) {
 	g_Vars.globals.szLastHookCalled = XorStr( "27" );
+
+	static bool s_diagLogged = false; // 2016-12-13 port: render-path diagnostics
+	if( !s_diagLogged ) {
+		s_diagLogged = true;
+		g_Log.Log( XorStr( ".pdr" ), XorStr( "diag: Present hook alive, menuOpen=%d, menuKey=%d" ),
+			( int )g_Vars.globals.menuOpen, g_Vars.menu.key.key );
+	}
 
 	if( !Render::DirectX::initialized ) {
 		if( pDevice->TestCooperativeLevel( ) == D3D_OK ) {
@@ -87,7 +95,10 @@ HRESULT __stdcall Hooked::Present( LPDIRECT3DDEVICE9 pDevice, const RECT* pSourc
 			size_t hash = size_t( ( uintptr_t )g_Vars.globals.menuOpen + ( uintptr_t )g_Vars.menu.size_x + ( uintptr_t )g_Vars.menu.size_y + uintptr_t( pizda.r( ) + pizda.g( ) + pizda.b( ) + pizda.a( ) ) );
 			static size_t old_hash = hash;
 
-			if( g_InputSystem.WasKeyPressed( g_Vars.menu.key.key ) ) {
+			// 2016-12-13 port: fall back to INSERT when no menu key is bound; never toggle on
+			// an invalid key (0) - WasKeyPressed(0) could phantom-toggle the menu closed instantly
+			const int menuKey = g_Vars.menu.key.key ? g_Vars.menu.key.key : 45 /* VK_INSERT */;
+			if( menuKey > 0 && g_InputSystem.WasKeyPressed( menuKey ) ) {
 				g_Vars.globals.menuOpen = !g_Vars.globals.menuOpen;
 			}
 

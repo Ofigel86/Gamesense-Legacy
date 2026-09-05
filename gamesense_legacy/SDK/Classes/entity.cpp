@@ -221,6 +221,8 @@ void CIKContext::Construct( ) {
 void CIKContext::Destructor( ) {
 	typedef void( __thiscall* IKDestructor )( CIKContext* );
 	auto ik_dector = ( IKDestructor )Engine::Displacement.CIKContext.m_nDestructor;
+	if( !ik_dector ) // 2016-12-13: unresolved on this build
+		return;
 	ik_dector( this );
 }
 
@@ -244,18 +246,24 @@ void CIKContext::ClearTargets( ) {
 void CIKContext::Init( CStudioHdr* hdr, QAngle* angles, Vector* origin, float currentTime, int frames, int boneMask ) {
 	typedef void( __thiscall* Init_t )( void*, CStudioHdr*, QAngle*, Vector*, float, int, int );
 	auto ik_init = Engine::Displacement.CIKContext.m_nInit;
+	if( !ik_init ) // 2016-12-13: unresolved on this build
+		return;
 	( ( Init_t )ik_init )( this, hdr, angles, origin, currentTime, frames, boneMask );
 }
 
 void CIKContext::UpdateTargets( Vector* pos, Quaternion* qua, matrix3x4_t* matrix, uint8_t* boneComputed ) {
 	typedef void( __thiscall* UpdateTargets_t )( void*, Vector*, Quaternion*, matrix3x4_t*, uint8_t* );
 	auto  ik_update_targets = Engine::Displacement.CIKContext.m_nUpdateTargets;
+	if( !ik_update_targets ) // 2016-12-13: unresolved on this build
+		return;
 	( ( UpdateTargets_t )ik_update_targets )( this, pos, qua, matrix, boneComputed );
 }
 
 void CIKContext::SolveDependencies( Vector* pos, Quaternion* qua, matrix3x4_t* matrix, uint8_t* boneComputed ) {
 	typedef void( __thiscall* SolveDependencies_t )( void*, Vector*, Quaternion*, matrix3x4_t*, uint8_t* );
 	auto  ik_solve_dependencies = Engine::Displacement.CIKContext.m_nSolveDependencies;
+	if( !ik_solve_dependencies ) // 2016-12-13: unresolved on this build
+		return;
 	( ( SolveDependencies_t )ik_solve_dependencies )( this, pos, qua, matrix, boneComputed );
 }
 
@@ -287,7 +295,8 @@ void C_BaseEntity::SetAbsOrigin( const Vector& origin ) {
 }
 
 void C_BaseEntity::InvalidatePhysicsRecursive( int change_flags ) {
-	reinterpret_cast< void( __thiscall* )( void*, int ) >( Engine::Displacement.Function.m_uInvalidatePhysics )( this, change_flags );
+	if( Engine::Displacement.Function.m_uInvalidatePhysics ) // 2016-12-13: unresolved on this build
+		reinterpret_cast< void( __thiscall* )( void*, int ) >( Engine::Displacement.Function.m_uInvalidatePhysics )( this, change_flags );
 }
 
 void C_BaseEntity::SetAbsAngles( const QAngle& angles ) {
@@ -543,6 +552,9 @@ bool& C_BaseAnimating::m_bClientSideRagdoll( ) {
 }
 
 bool& C_BaseAnimating::m_bShouldDraw( ) {
+	static bool s_dummy = true;
+	if( !Engine::Displacement.C_BaseAnimating.m_bShouldDraw ) // 2016-12-13: unresolved on this build
+		return s_dummy;
 	return *( bool* )( ( uintptr_t )this + Engine::Displacement.C_BaseAnimating.m_bShouldDraw );
 }
 
@@ -586,7 +598,7 @@ uintptr_t* C_BaseAnimating::GetModelPtr( ) {
 
 	using UnkSub_t = int( __thiscall* )( void* );
 	static auto UnkSub = reinterpret_cast< UnkSub_t >( Memory::Scan( XorStr( "client.dll" ), XorStr( "55 8B EC 51 53 8B D9 56 57 8D B3 ? ? ? ? FF 15" ) ) );
-	if( !*( uintptr_t* )( uintptr_t( this ) + 10572 ) && ( *( int( __thiscall** )( int ) )( *( uintptr_t* )( uintptr_t( this ) + 4 ) + 32 ) )( uintptr_t( this ) + 4 ) )
+	if( UnkSub && !*( uintptr_t* )( uintptr_t( this ) + 10572 ) && ( *( int( __thiscall** )( int ) )( *( uintptr_t* )( uintptr_t( this ) + 4 ) + 32 ) )( uintptr_t( this ) + 4 ) )
 		UnkSub( v1 );
 
 	result = *( uintptr_t** )( uintptr_t( v1 ) + 10572 );
@@ -636,7 +648,9 @@ void CCollisionProperty::SetCollisionBounds( const Vector& mins, const Vector& m
 		return;
 
 	using Fn = void( __thiscall* )( CCollisionProperty*, const Vector&, const Vector& );
-	static auto mem = ( Fn )Memory::Scan( XorStr( "client.dll" ), XorStr( "53 8B DC 83 EC 08 83 E4 F8 83 C4 04 55 8B 6B 04 89 6C 24 04 8B EC 83 EC 10 56 57 8B 7B" ) );
+	static auto mem = ( Fn )Memory::Scan( XorStr( "client.dll" ), XorStr( "53 8B DC 83 EC 08 83 E4 F8 83 C4 04 55 8B 6B 04 89 6C 24 04 8B EC 83 EC" ) ); // 2016-12-13
+	if( !mem )
+		return;
 	mem( this, mins, maxs );
 }
 

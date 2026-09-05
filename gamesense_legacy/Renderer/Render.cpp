@@ -587,10 +587,13 @@ bool Render::Engine::WorldToScreen( const Vector& world, Vector2D& screen ) {
 	float w;
 	static ptrdiff_t ptrViewMatrix;
 	if( !ptrViewMatrix ) {
-		ptrViewMatrix = static_cast< ptrdiff_t >( Memory::Scan( XorStr( "client.dll" ), XorStr( "0F 10 05 ? ? ? ? 8D 85 ? ? ? ? B9" ) ) );
-		ptrViewMatrix += 0x3;
+		// 2016-12-13: "movups xmm0, [viewmatrix]; lea eax,[ebp-..]" - the operand is the matrix address itself
+		auto vmScan = Memory::Scan( XorStr( "client.dll" ), XorStr( "F3 0F 6F 05 ? ? ? ? 8D 85" ) );
+		if( !vmScan )
+			return false;
+		ptrViewMatrix = static_cast< ptrdiff_t >( vmScan );
+		ptrViewMatrix += 0x4;
 		ptrViewMatrix = *reinterpret_cast< uintptr_t* >( ptrViewMatrix );
-		ptrViewMatrix += 176;
 	}
 
 	const VMatrix& matrix = *( VMatrix* )ptrViewMatrix;

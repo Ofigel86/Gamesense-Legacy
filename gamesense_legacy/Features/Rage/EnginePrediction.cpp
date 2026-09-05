@@ -149,7 +149,7 @@ void Prediction::Begin( Encrypted_t<CUserCmd> _cmd )
 
 void Prediction::PostEntityThink( C_CSPlayer* player ) {
 	static auto PostThinkVPhysics = reinterpret_cast< bool( __thiscall* )( C_BaseEntity* ) >( Memory::Scan( "client.dll", "55 8B EC 83 E4 F8 81 EC ? ? ? ? 53 8B D9 56 57 83 BB ? ? ? ? ? 75 50 8B 0D" ) );
-	static auto SimulatePlayerSimulatedEntities = reinterpret_cast< void( __thiscall* )( C_BaseEntity* ) >( Memory::Scan( "client.dll", "56 8B F1 57 8B BE ? ? ? ? 83 EF 01 78 72 90 8B 86" ) );
+	static auto SimulatePlayerSimulatedEntities = reinterpret_cast< void( __thiscall* )( C_BaseEntity* ) >( Memory::Scan( "client.dll", "56 8B F1 57 8B BE ? ? ? ? 83 EF 01 78 72 90 8B 86" ) ); // 2016-12-13: absent in this build, guarded below
 
 	if( player && !player->IsDead( ) ) {
 		using UpdateCollisionBoundsFn = void( __thiscall* )( void* );
@@ -168,7 +168,8 @@ void Prediction::PostEntityThink( C_CSPlayer* player ) {
 
 		PostThinkVPhysics( player );
 	}
-	SimulatePlayerSimulatedEntities( player );
+	if( SimulatePlayerSimulatedEntities ) // 2016-12-13: absent in the 13.12.2016 build
+		SimulatePlayerSimulatedEntities( player );
 }
 
 void Prediction::End( bool* send_packet ) {
